@@ -1,24 +1,24 @@
-CREATE TABLE Movie (
-    id  INT PRIMARY KEY ,
-    title VARCHAR(150) NOT NULL,
-    description VARCHAR(1000),
-    release_data DATE NOT NULL ,
-    rating INTEGER CHECK ( rating >=0   AND rating <= 10)
+create table Movie (
+    id  int primary key,
+    title varchar(150) not null ,
+    description varchar(1000),
+    release_data date not null ,
+    rating integer check  ( rating >=0   and rating <= 10)
 
 );
-CREATE TABLE Actor(
-    id INT PRIMARY KEY ,
-    name VARCHAR(50),
-    Birthday DATE,
-    gender VARCHAR(10)
+create table Actor(
+    id int primary key,
+    name varchar(50),
+    Birthday date,
+    gender varchar(10)
 );
 
-CREATE TABLE Movie_Actor(
-    Movie_id INT,
-    Actor_id INT,
-    PRIMARY KEY (Movie_id,Actor_id),
-    FOREIGN KEY (Movie_id) REFERENCES Movie(id),
-    FOREIGN KEY (Actor_id) REFERENCES Actor(id)
+create table Movie_Actor(
+    Movie_id int,
+    Actor_id int,
+    primary key (Movie_id,Actor_id),
+    foreign key (Movie_id) references Movie(id),
+    foreign key (Actor_id) references Actor(id)
 
 
 
