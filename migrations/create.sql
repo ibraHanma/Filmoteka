@@ -1,4 +1,4 @@
-create table Movie (
+create table movie (
     id  int primary key,
     title varchar(150) not null ,
     description varchar(1000),
@@ -6,14 +6,14 @@ create table Movie (
     rating integer check  ( rating >=0   and rating <= 10)
 
 );
-create table Actor(
+create table actor(
     id int primary key,
     name varchar(50),
     Birthday date,
     gender varchar(10)
 );
 
-create table Movie_Actor(
+create table movie_actor(
     Movie_id int,
     Actor_id int,
     primary key (Movie_id,Actor_id),
