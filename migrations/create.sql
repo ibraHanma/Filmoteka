@@ -1,4 +1,4 @@
-CREATE TABLE Movie (
+create table movie (
     id  int primary key,
     title varchar(150) not null ,
     description varchar(1000),
@@ -6,7 +6,7 @@ CREATE TABLE Movie (
     rating integer check  ( rating >=0   and rating <= 10)
 
 );
-create table Actor(
+create table actor(
     id int primary key,
     name varchar(50),
     birthday date,
@@ -14,9 +14,9 @@ create table Actor(
 );
 
 create table Movie_Actor(
-    Movie_id INT,
-    Actor_id INT,
-    PRIMARY KEY (Movie_id, Actor_id),
-    FOREIGN KEY (Movie_id) REFERENCES Movie(id),
-    FOREIGN KEY (Actor_id) REFERENCES Actor(id)
+    movie_id INT,
+    actor_id INT,
+    PRIMARY KEY (movie_id, actor_id),
+    FOREIGN KEY (movie_id) REFERENCES movie(id),
+    FOREIGN KEY (actor_id) REFERENCES actor(id)
 );
