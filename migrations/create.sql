@@ -1,19 +1,19 @@
-create table movie (
-    id  int primary key,
-    title varchar(150) not null ,
-    description varchar(1000),
-    release_date date not null ,
-    rating integer check  ( rating >=0   and rating <= 10)
-
-);
-create table actor(
-    id int primary key,
-    name varchar(50),
-    birthday date,
-    gender varchar(10)
+CREATE TABLE movie (
+    id INT PRIMARY KEY,
+    title VARCHAR(150) NOT NULL,
+    description VARCHAR(1000),
+    release_date DATE NOT NULL,
+    rating INT CHECK (rating >= 0 AND rating <= 10)
 );
 
-create table Movie_Actor(
+CREATE TABLE actor (
+    id INT PRIMARY KEY,
+    name VARCHAR(50),
+    birthday DATE,
+    gender VARCHAR(10)
+);
+
+CREATE TABLE movie_actor (
     movie_id INT,
     actor_id INT,
     PRIMARY KEY (movie_id, actor_id),
