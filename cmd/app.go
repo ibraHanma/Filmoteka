@@ -5,8 +5,6 @@ import (
 	"Filmoteka/internal/repository"
 )
 
-// запуск приложения
-
 func Run() error {
 
 	db, err := postgres.Connect()
