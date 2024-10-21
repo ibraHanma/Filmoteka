@@ -21,7 +21,7 @@ func NewMovie(db *sql.DB) *movie {
 
 }
 
-// создание фильма
+
 
 func (m *movie) CreateMovie(movie Movie) (int, error) {
 	var id int
@@ -33,7 +33,7 @@ func (m *movie) CreateMovie(movie Movie) (int, error) {
 	return id, nil
 }
 
-// Получение фильма по ID
+
 
 func (m *movie) GetMovie(id int) (Movie, error) {
 	var movie Movie
