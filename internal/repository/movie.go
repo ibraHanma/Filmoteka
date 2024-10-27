@@ -2,13 +2,16 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
+	"github.com/Masterminds/squirrel"
+	"time"
 )
 
 type Movie struct {
 	ID          int
 	Title       string
 	Description string
-	ReleaseDate int
+	ReleaseDate time.Time
 	Rating      int
 }
 
@@ -21,44 +24,70 @@ func NewMovie(db *sql.DB) *movie {
 
 }
 
-
-
 func (m *movie) CreateMovie(movie Movie) (int, error) {
 	var id int
-	query := `INSERT INTO movie (title, description, release_date, rating) VALUES ($1, $2, $3, $4) RETURNING id`
-	err := m.db.QueryRow(query, movie.Title, movie.Description, movie.ReleaseDate, movie.Rating).Scan(&id)
+
+	query, args, err := squirrel.Insert("movie").
+		Columns("title", "description", "release_date", "rating").
+		Values(movie.Title, movie.Description, movie.ReleaseDate, movie.Rating).
+		Suffix("RETURNING id").
+		ToSql()
 	if err != nil {
 		return 0, err
+	}
+
+	err = m.db.QueryRow(query, args...).Scan(&id)
+	if err != nil {
+		return 0, fmt.Errorf("Не удалось выполнить запрос %w", err)
 	}
 	return id, nil
 }
 
-
-
 func (m *movie) GetMovie(id int) (Movie, error) {
 	var movie Movie
-	query := `SELECT id,title,description,release_date,rating FROM movie WHERE id = $1`
-	err := m.db.QueryRow(query, id).Scan(&movie.ID, &movie.Title, &movie.Description, &movie.ReleaseDate, &movie.Rating)
+	query, args, err := squirrel.Select("id", "title", "description", "release_date", "rating").
+		From("movie").
+		Where(squirrel.Eq{"id": id}).
+		ToSql()
 	if err != nil {
 		return Movie{}, err
 	}
+	err = m.db.QueryRow(query, args...).Scan(&movie.ID, &movie.Title, &movie.Description, &movie.ReleaseDate, &movie.Rating)
+	if err != nil {
+		return Movie{}, fmt.Errorf("не удалось отсканировать фильм с идентификатором%d,%w", id, err)
+	}
 	return movie, nil
+
 }
 
 func (m *movie) UpdateMovie(movie Movie) error {
-
-	query := `UPDATE movie SET title = $1, description = $2, release_date = $3, rating = $4 WHERE id = $5`
-	_, err := m.db.Exec(query, movie.Title, movie.Description, movie.ReleaseDate, movie.Rating, movie.ID)
+	query, args, err := squirrel.Update("movie").
+		Set("title", movie.Title).
+		Set("description", movie.Description).
+		Set("release_date", movie.ReleaseDate).
+		Set("rating", movie.Rating).
+		Where(squirrel.Eq{"id": movie.ID}).
+		ToSql()
 	if err != nil {
-		return err
+		return fmt.Errorf("не удалось создать SQL запрос: %w", err)
+	}
+	_, err = m.db.Exec(query, args...)
+	if err != nil {
+		return fmt.Errorf("не удалось обновить фильм с идентификатором %d: %w", movie.ID, err)
 	}
 	return nil
 }
+
 func (m *movie) DeleteMovie(id int) error {
-	query := `DELETE  FROM movie WHERE id = $1`
-	_, err := m.db.Exec(query, id)
+	query, args, err := squirrel.Delete("movie").
+		Where(squirrel.Eq{"id": id}).
+		ToSql()
 	if err != nil {
-		return err
+		return fmt.Errorf("не удалось создать SQL запрос: %w", err)
+	}
+	_, err = m.db.Exec(query, args...)
+	if err != nil {
+		return fmt.Errorf("не удалось удалить фильм с идентификатором %d: %w", id, err)
 	}
 	return nil
 
