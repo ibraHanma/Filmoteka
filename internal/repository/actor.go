@@ -30,7 +30,9 @@ func (a *actor) CreateActor(actor Actor) (int, error) {
 		Columns("name", "birthday", "gender").
 		Values(actor.Name, actor.Birthday, actor.Gender).
 		Suffix("RETURNING id").
+		PlaceholderFormat(squirrel.Dollar).
 		ToSql()
+
 	if err != nil {
 		return 0, err
 	}

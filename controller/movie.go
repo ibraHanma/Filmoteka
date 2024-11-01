@@ -4,17 +4,38 @@ import (
 	"time"
 )
 
-type serviceMovie interface {
-	CreateMovie(title string, description string, releaseDate time.Time, rating int) (int, error)
-	GetMovie(id int) (Movie, error)
+type ServiceMovie interface {
+	CreateMovie(title string, description string, releaseDate time.Time, rating int) error
+	GetMovie(id int) (string, string, int, error)
 	UpdateMovie(id int, title string, description string, releaseDate time.Time, rating int) error
 	DeleteMovie(id int) error
 }
-
 type Movie struct {
 	ID          int
 	Title       string
 	Description string
 	ReleaseDate time.Time
 	Rating      int
+}
+type movieController struct {
+	service ServiceMovie
+}
+
+func NewMovieController(service ServiceMovie) *movieController {
+	return &movieController{service: service}
+}
+func (mc *movieController) CreateMovie(title string, description string, releaseDate time.Time, rating int) error {
+	return mc.service.CreateMovie(title, description, releaseDate, rating)
+
+}
+func (mc *movieController) GetMovie(id int) (string, string, int, error) {
+	return mc.service.GetMovie(id)
+
+}
+func (mc *movieController) UpdateMovie(id int, title string, description string, releaseDate time.Time, rating int) error {
+	return mc.service.UpdateMovie(id, title, description, releaseDate, rating)
+
+}
+func (mc *movieController) DeleteMovie(id int) error {
+	return mc.service.DeleteMovie(id)
 }
