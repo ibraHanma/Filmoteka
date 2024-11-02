@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type ServiceMovie interface {
+type serviceMovie interface {
 	CreateMovie(title string, description string, releaseDate time.Time, rating int) error
 	GetMovie(id int) (string, string, int, error)
 	UpdateMovie(id int, title string, description string, releaseDate time.Time, rating int) error
@@ -18,10 +18,10 @@ type Movie struct {
 	Rating      int
 }
 type movieController struct {
-	service ServiceMovie
+	service serviceMovie
 }
 
-func NewMovieController(service ServiceMovie) *movieController {
+func NewMovieController(service serviceMovie) *movieController {
 	return &movieController{service: service}
 }
 func (mc *movieController) CreateMovie(title string, description string, releaseDate time.Time, rating int) error {

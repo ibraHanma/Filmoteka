@@ -22,7 +22,6 @@ func NewActorController(service ServiceActor) *actorController {
 	return &actorController{service: service}
 }
 
-// Реализация методов контроллера
 func (ac *actorController) CreateActor(name string, birthday time.Time, gender string) (int, error) {
 	return ac.service.CreateActor(name, birthday, gender)
 }

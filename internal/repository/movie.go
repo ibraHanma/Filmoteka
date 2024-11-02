@@ -24,7 +24,7 @@ func NewMovie(db *sql.DB) *movie {
 
 }
 
-func (m *movie) CreateMovie(movie Movie) (int, error) {
+func (m *movie) CreateMovie(movie *Movie) (int, error) {
 	var id int
 
 	query, args, err := squirrel.Insert("movie").
