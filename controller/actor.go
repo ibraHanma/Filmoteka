@@ -14,26 +14,26 @@ type Actor struct {
 	Birthday time.Time
 	Gender   string
 }
-type actorController struct {
+type ActorController struct {
 	service ServiceActor
 }
 
-func NewActorController(service ServiceActor) *actorController {
-	return &actorController{service: service}
+func NewActorController(service ServiceActor) *ActorController {
+	return &ActorController{service: service}
 }
 
-func (ac *actorController) CreateActor(name string, birthday time.Time, gender string) (int, error) {
+func (ac *ActorController) CreateActor(name string, birthday time.Time, gender string) (int, error) {
 	return ac.service.CreateActor(name, birthday, gender)
 }
 
-func (ac *actorController) GetActor(id int) (Actor, error) {
+func (ac *ActorController) GetActor(id int) (Actor, error) {
 	return ac.service.GetActor(id)
 }
 
-func (ac *actorController) UpdateActor(id int, name string, birthday time.Time, gender string) (int, error) {
+func (ac *ActorController) UpdateActor(id int, name string, birthday time.Time, gender string) (int, error) {
 	return ac.service.UpdateActor(id, name, birthday, gender)
 }
 
-func (ac *actorController) Delete(id int) error {
+func (ac *ActorController) Delete(id int) error {
 	return ac.service.DeleteActor(id)
 }

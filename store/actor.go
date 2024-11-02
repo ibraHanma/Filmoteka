@@ -20,6 +20,7 @@ type ActorStore struct {
 
 func (r *ActorStore) CreateActor(actor service.Actor) error {
 	r.actor = append(r.actor, actor)
+
 	return nil
 
 }
@@ -43,6 +44,7 @@ func (r *ActorStore) UpdateActor(actor *service.Actor) error {
 
 }
 func (r *ActorStore) DeleteActor(id int) error {
+
 	for i, m := range r.actor {
 		if m.ID == id {
 			r.actor = append(r.actor[:i], r.actor[i+1:]...)

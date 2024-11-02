@@ -22,10 +22,10 @@ func Run() error {
 	movieStore := store.NewMovie(db)
 	actorStore := store.NewActor(db)
 
-	movieService := service.NewMovie(movieStore)
-	actorService := service.NewActor(actorStore)
+	MovieService := service.NewMovie(movieStore)
+	ActorService := service.NewActor(actorStore)
 
-	filmotekaController := controller.NewFilmoteka(movieService, actorService)
+	filmotekaController := controller.NewFilmoteka(MovieService, ActorService)
 
 	return nil
 }

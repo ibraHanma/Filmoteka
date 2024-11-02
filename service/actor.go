@@ -5,35 +5,31 @@ import (
 	"time"
 )
 
-type Actor struct {
-	ID       int
-	Name     string
-	Birthday time.Time
-	Gender   string
-}
-type ActorService struct {
-	store storeActor
-}
-
 type storeActor interface {
 	CreateActor(actor Actor) error
 	GetActor(id int) (Actor, error)
 	UpdateActor(id int, actor Actor) error
 	DeleteActor(id int) error
 }
+type Actor struct {
+	ID       int
+	Name     string
+	Birthday time.Time
+	Gender   string
+}
 
-// ActorService представляет собой структуру сервиса для акторов
+type ActorService struct {
+	store storeActor
+}
 
 func NewActor(store storeActor) ActorService {
 	return ActorService{store: store}
 }
 
-// CreateActor создает нового актера в хранилище
 func (a *ActorService) CreateActor(actor Actor) error {
 	if actor.Name == "" {
 		return errors.New("actor name cannot be empty")
 	}
-
 	return a.store.CreateActor(actor)
 }
 

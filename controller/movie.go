@@ -21,8 +21,8 @@ type movieController struct {
 	service serviceMovie
 }
 
-func NewMovieController(service serviceMovie) *movieController {
-	return &movieController{service: service}
+func NewMovieController(service serviceMovie) movieController {
+	return movieController{service: service}
 }
 func (mc *movieController) CreateMovie(title string, description string, releaseDate time.Time, rating int) error {
 	return mc.service.CreateMovie(title, description, releaseDate, rating)
