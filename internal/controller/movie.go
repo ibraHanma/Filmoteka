@@ -17,25 +17,23 @@ type Movie struct {
 	ReleaseDate time.Time
 	Rating      int
 }
-type movieController struct {
+type MovieController struct {
 	service serviceMovie
 }
 
-func NewMovieController(service serviceMovie) movieController {
-	return movieController{service: service}
-}
-func (mc *movieController) CreateMovie(title string, description string, releaseDate time.Time, rating int) error {
+func (mc *MovieController) CreateMovie(title string, description string, releaseDate time.Time, rating int) error {
 	return mc.service.CreateMovie(title, description, releaseDate, rating)
 
 }
-func (mc *movieController) GetMovie(id int) (string, string, int, error) {
+func (mc *MovieController) GetMovie(id int) (string, string, int, error) {
 	return mc.service.GetMovie(id)
 
 }
-func (mc *movieController) UpdateMovie(id int, title string, description string, releaseDate time.Time, rating int) error {
+
+func (mc *MovieController) UpdateMovie(id int, title string, description string, releaseDate time.Time, rating int) error {
 	return mc.service.UpdateMovie(id, title, description, releaseDate, rating)
 
 }
-func (mc *movieController) DeleteMovie(id int) error {
+func (mc *MovieController) DeleteMovie(id int) error {
 	return mc.service.DeleteMovie(id)
 }

@@ -1,21 +1,21 @@
 package store
 
 import (
-	"Filmoteka/service"
+	"Filmoteka/internal/service"
 	"database/sql"
 	"fmt"
 )
 
-type movie struct {
+type Movie struct {
 	db *sql.DB
-}
-
-func NewMovie(db *sql.DB) *movie {
-	return &movie{db: db}
 }
 
 type MovieStore struct {
 	movie []service.Movie
+}
+
+func NewMovie(db *sql.DB) *Movie {
+	return &Movie{db: db}
 }
 
 func (s *MovieStore) CreateMovie(movie service.Movie) error {

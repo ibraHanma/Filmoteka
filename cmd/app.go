@@ -1,11 +1,12 @@
 package main
 
 import (
-	"Filmoteka/controller"
+	"Filmoteka/internal/controller"
 	"Filmoteka/internal/postgres"
 	"Filmoteka/internal/repository"
-	"Filmoteka/service"
-	"Filmoteka/store"
+	service2 "Filmoteka/internal/service"
+	store2 "Filmoteka/internal/store"
+	"database/sql"
 )
 
 func Run() error {
@@ -14,16 +15,21 @@ func Run() error {
 	if err != nil {
 		return err
 	}
-	defer db.Close()
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+
+		}
+	}(db)
 
 	repository.NewMovie(db)
 	repository.NewActor(db)
 
-	movieStore := store.NewMovie(db)
-	actorStore := store.NewActor(db)
+	movieStore := store2.NewMovie(db)
+	actorStore := store2.NewActor(db)
 
-	MovieService := service.NewMovie(movieStore)
-	ActorService := service.NewActor(actorStore)
+	MovieService := service2.NewMovie(movieStore)
+	ActorService := service2.NewActor(actorStore)
 
 	filmotekaController := controller.NewFilmoteka(MovieService, ActorService)
 

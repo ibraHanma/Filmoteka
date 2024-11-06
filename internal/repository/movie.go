@@ -38,7 +38,7 @@ func (m *movie) CreateMovie(movie *Movie) (int, error) {
 
 	err = m.db.QueryRow(query, args...).Scan(&id)
 	if err != nil {
-		return 0, fmt.Errorf("Не удалось выполнить запрос %w", err)
+		return 0, fmt.Errorf("не удалось выполнить запрос %w", err)
 	}
 	return id, nil
 }

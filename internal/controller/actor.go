@@ -2,7 +2,7 @@ package controller
 
 import "time"
 
-type ServiceActor interface {
+type serviceActor interface {
 	CreateActor(name string, birthday time.Time, gender string) (int, error)
 	GetActor(id int) (Actor, error)
 	UpdateActor(id int, name string, birthday time.Time, gender string) (int, error)
@@ -15,11 +15,7 @@ type Actor struct {
 	Gender   string
 }
 type ActorController struct {
-	service ServiceActor
-}
-
-func NewActorController(service ServiceActor) *ActorController {
-	return &ActorController{service: service}
+	service serviceActor
 }
 
 func (ac *ActorController) CreateActor(name string, birthday time.Time, gender string) (int, error) {

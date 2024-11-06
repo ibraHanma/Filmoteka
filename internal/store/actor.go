@@ -1,17 +1,17 @@
 package store
 
 import (
-	"Filmoteka/service"
+	"Filmoteka/internal/service"
 	"database/sql"
 	"fmt"
 )
 
-type actor struct {
+type Actor struct {
 	db *sql.DB
 }
 
-func NewActor(db *sql.DB) *actor {
-	return &actor{db: db}
+func NewActor(db *sql.DB) *Actor {
+	return &Actor{db: db}
 }
 
 type ActorStore struct {

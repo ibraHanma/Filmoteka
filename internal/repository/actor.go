@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/Masterminds/squirrel"
 	"time"
@@ -57,8 +58,8 @@ func (a *actor) GetActor(id int) (Actor, error) {
 
 	err = a.db.QueryRow(query, args...).Scan(&actor.ID, &actor.Name, &actor.Birthday, &actor.Gender)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return Actor{}, fmt.Errorf("актер с идентификатором не найден", id)
+		if errors.Is(err, sql.ErrNoRows) {
+			return Actor{}, fmt.Errorf("актер с идентификатором не найден %w", id)
 		}
 		return Actor{}, err
 	}
