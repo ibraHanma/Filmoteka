@@ -6,9 +6,9 @@ import (
 )
 
 type storeActor interface {
-	CreateActor(actor Actor) error
+	CreateActor(name string, birthday time.Time, gender string) (int, error)
 	GetActor(id int) (Actor, error)
-	UpdateActor(id int, actor Actor) error
+	UpdateActor(id int, name string, birthday time.Time, gender string)
 	DeleteActor(id int) error
 }
 type Actor struct {
@@ -20,6 +20,7 @@ type Actor struct {
 
 type ActorService struct {
 	store storeActor
+	ID    int
 }
 
 func NewActor(store storeActor) ActorService {
@@ -30,7 +31,7 @@ func (a *ActorService) CreateActor(actor Actor) error {
 	if actor.Name == "" {
 		return errors.New("actor name cannot be empty")
 	}
-	return a.store.CreateActor(actor)
+	return nil
 }
 
 // GetActor возвращает актера по ID
@@ -42,11 +43,11 @@ func (a *ActorService) GetActor(id int) (Actor, error) {
 }
 
 // UpdateActor обновляет данные существующего актера
-func (a *ActorService) UpdateActor(id int, actor Actor) error {
+func (a *ActorService) UpdateActor(id, int, actor Actor) error {
 	if actor.Name == "" {
 		return errors.New("actor name cannot be empty")
 	}
-	return a.store.UpdateActor(id, actor)
+	return nil
 }
 
 // DeleteActor удаляет актера по ID

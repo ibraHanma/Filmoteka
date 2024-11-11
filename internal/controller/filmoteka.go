@@ -10,5 +10,5 @@ type filmoteka struct {
 }
 
 func NewFilmoteka(MovieService service2.MovieService, ActorService service2.ActorService) *filmoteka {
-	return &filmoteka{movie: &MovieService, actor: &ActorService}
+	return &filmoteka{movie: MovieService, actor: ActorService}
 }
