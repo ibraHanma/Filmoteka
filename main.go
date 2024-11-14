@@ -9,15 +9,11 @@ import (
 func main() {
 	router := gin.Default()
 
-	// Открытые маршруты
 	router.GET("/public", PublicHandler)
-
-	// Защищенный маршрут для администраторов
 	router.GET("/admin", middleware.TokenAuthMiddleware(), middleware.RequireRole("admin"), AdminHandler)
-
-	router.Run(":8080")
-	
+	router.Run(":8081")
 }
+
 func PublicHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Public resource accessed!"})
 }

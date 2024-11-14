@@ -9,6 +9,6 @@ type Filmoteka struct {
 	actor service2.ActorService
 }
 
-func NewFilmoteka(movieService *service2.MovieService, actorService *service2.ActorService) *Filmoteka {
-	return &Filmoteka{movie: *movieService, actor: *actorService}
+func NewFilmoteka(MovieService *service2.MovieService, ActorService *service2.ActorService) *Filmoteka {
+	return &Filmoteka{movie: *MovieService, actor: *ActorService}
 }
