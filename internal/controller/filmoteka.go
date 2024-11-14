@@ -4,11 +4,11 @@ import (
 	service2 "Filmoteka/internal/service"
 )
 
-type filmoteka struct {
-	movie serviceMovie
-	actor serviceActor
+type Filmoteka struct {
+	movie service2.MovieService
+	actor service2.ActorService
 }
 
-func NewFilmoteka(MovieService service2.MovieService, ActorService service2.ActorService) *filmoteka {
-	return &filmoteka{movie: MovieService, actor: ActorService}
+func NewFilmoteka(movieService *service2.MovieService, actorService *service2.ActorService) *Filmoteka {
+	return &Filmoteka{movie: *movieService, actor: *actorService}
 }

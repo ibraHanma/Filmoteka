@@ -16,7 +16,7 @@ type Server struct {
 func NewServer(cnt controller.ActorController, mCnt controller.MovieController) Server {
 	return Server{
 		httpServer: &http.Server{
-			Addr:           ":8080",
+			Addr:           ":8081",
 			MaxHeaderBytes: 1 << 20,          // 1MB
 			ReadTimeout:    10 * time.Second, // 10 сек
 			WriteTimeout:   10 * time.Second,
@@ -31,7 +31,7 @@ func InitRoutes(cnt *controller.ActorController, mCnt *controller.MovieControlle
 
 	r.POST("/actor", cnt.CreateActor)
 	r.PUT("/actor/update/:id", cnt.UpdateActor)
-	r.GET("actor/get/:id", cnt.GetActor)
+	r.GET("/actor/get/:id", cnt.GetActor)
 	r.DELETE("/actor/delete/:id", cnt.DeleteActor)
 
 	r.POST("/movie", mCnt.CreateMovie)

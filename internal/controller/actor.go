@@ -2,6 +2,7 @@ package controller
 
 import (
 	"Filmoteka/internal/model"
+	"Filmoteka/internal/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -16,7 +17,8 @@ type serviceActor interface {
 }
 
 type ActorController struct {
-	service serviceActor
+	service      serviceActor
+	ActorService service.ActorService
 }
 
 func NewActorController(service serviceActor) *ActorController {
@@ -29,15 +31,13 @@ func (ac *ActorController) CreateActor(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
-	id, err := ac.service.CreateActor(newActor.Name, newActor.Birthday, newActor.Gender)
-	{
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create actor"})
-			return
-		}
-		ctx.JSON(http.StatusCreated, gin.H{"id": id})
-	}
 
+	id, err := ac.service.CreateActor(newActor.Name, newActor.Birthday, newActor.Gender)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create actor"})
+		return
+	}
+	ctx.JSON(http.StatusCreated, gin.H{"id": id})
 }
 
 func (ac *ActorController) GetActor(ctx *gin.Context) {
@@ -64,15 +64,15 @@ func (ac *ActorController) UpdateActor(ctx *gin.Context) {
 		return
 	}
 
-	var Actor model.Actor
-	if err := ctx.ShouldBindJSON(&Actor); err != nil {
+	var actor model.Actor
+	if err := ctx.ShouldBindJSON(&actor); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
-	Actor.ID = id
+	actor.ID = id
 
-	if err := ac.service.UpdateActor(id, Actor.Name, Actor.Birthday, Actor.Gender); err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Actor not Found"})
+	if err := ac.service.UpdateActor(id, actor.Name, actor.Birthday, actor.Gender); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Update failed"})
 		return
 	}
 
@@ -91,5 +91,4 @@ func (ac *ActorController) DeleteActor(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusNoContent, nil)
-
 }

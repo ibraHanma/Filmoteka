@@ -22,16 +22,18 @@ func Run() error {
 		}
 	}(db)
 
-	repository.NewMovie(db)
-	repository.NewActor(db)
+	movieRepo := repository.NewMovie(db)
+	actorRepo := repository.NewActor(db)
 
-	movieStore := store2.NewMovie(db)
-	actorStore := store2.NewActor(db)
+	movieStore := store2.NewMovie(movieRepo)
+	actorStore := store2.NewActor(actorRepo)
 
-	MovieService := service2.NewMovie(movieStore)
-	ActorService := service2.NewActor(actorStore)
+	// Инициализация сервисов
+	movieService := service2.NewMovie(movieStore)
+	actorService := service2.NewActor(actorStore)
 
-	filmotekaController := controller.NewFilmoteka(MovieService, ActorService)
+	// Инициализация контроллера
+	filmotekaController := controller.NewFilmoteka(movieService, actorService)
 
 	return nil
 }
