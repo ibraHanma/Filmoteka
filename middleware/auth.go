@@ -1,52 +1,43 @@
+// middleware/auth.go
 package middleware
 
 import (
-	"context"
-	"fmt"
 	"net/http"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
-type ContextKey string
-
-const UserRoleKey ContextKey = "userRole"
-
-func AuthMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	
-		authHeader := r.Header.Get("Authorization")
-		if authHeader == "" {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+// TokenAuthMiddleware проверяет наличие токена и устанавливает роль в контекст
+func TokenAuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Замените этот код на свою логику проверки аутентификации
+		token := c.GetHeader("Authorization")
+		if token == "" {
+			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
 
-		// Ожидаем формат "Bearer <token>"
-		tokenParts := strings.Split(authHeader, " ")
-		if len(tokenParts) != 2 || tokenParts[0] != "Bearer" {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
+		// Здесь просто хардкодим роль для примера
+		role := "user" // Вместо этого вы можете извлечь роль из своей базы данных или другого источника
+		if strings.HasPrefix(token, "admin_") {
+			role = "admin"
 		}
 
-		token := tokenParts[1]
-		role, err := parseToken(token) // Функция для парсинга токена
-		if err != nil {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
-
-		// Устанавливаем роль в контекст
-		ctx := context.WithValue(r.Context(), UserRoleKey, role)
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
+		c.Set("role", role) // Устанавливаем роль в контекст
+		c.Next()
+	}
 }
 
-// parseToken - функция для парсинга токена и получения роли пользователя
-// Здесь вы можете добавить вашу логику для проверки токена
-func parseToken(token string) (string, error) {
-	// Пример: просто возвращаем "admin" для демонстрации
-	// В реальном приложении вы должны проверить токен и вернуть соответствующую роль
-	if token == "your-secret-token" {
-		return "admin", nil
+// RequireRole проверяет, есть ли у пользователя требуемая роль
+func RequireRole(requiredRole string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		role, exists := c.Get("role")
+		if !exists || role != requiredRole {
+			c.AbortWithStatus(http.StatusForbidden)
+			return
+		}
+
+		c.Next()
 	}
-	return "", fmt.Errorf("invalid token")
 }

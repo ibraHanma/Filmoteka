@@ -1,25 +1,27 @@
 package main
 
 import (
-	"Filmoteka/internal/controller"
-	"Filmoteka/internal/service"
-	"Filmoteka/router"
+	"Filmoteka/middleware"
+	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func main() {
+	router := gin.Default()
 
-	actorService := service.ActorService{} // создание сервиса актера
-	movieService := service.MovieService{} // создание сервиса фильма
+	// Открытые маршруты
+	router.GET("/public", PublicHandler)
 
-	actorController := controller.ActorController{ActorService: actorService}
-	movieController := controller.MovieController{MovieService: movieService}
+	// Защищенный маршрут для администраторов
+	router.GET("/admin", middleware.TokenAuthMiddleware(), middleware.RequireRole("admin"), AdminHandler)
 
-	srv := router.NewServer(actorController, movieController)
+	router.Run(":8080")
+	
+}
+func PublicHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"message": "Public resource accessed!"})
+}
 
-	router.InitRoutes(&actorController, &movieController)
-
-	// Запускаем сервер
-	if err := srv.Run(); err != nil {
-		panic(err)
-	}
+func AdminHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"message": "Admin resource accessed! You have admin access."})
 }
