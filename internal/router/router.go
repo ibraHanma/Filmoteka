@@ -9,17 +9,21 @@ import (
 
 type Server struct {
 	httpServer *http.Server
+	router     *gin.Engine
 	cnt        controller.ActorController
 	mCnt       controller.MovieController
 }
 
-func NewServer(cnt controller.ActorController, mCnt controller.MovieController) Server {
-	return Server{
+func NewServer(cnt controller.ActorController, mCnt controller.MovieController) *Server {
+	r := InitRoutes(&cnt, &mCnt)
+
+	return &Server{
 		httpServer: &http.Server{
 			Addr:           ":8081",
 			MaxHeaderBytes: 1 << 20,          // 1MB
 			ReadTimeout:    10 * time.Second, // 10 сек
 			WriteTimeout:   10 * time.Second,
+			Handler:        r,
 		},
 		cnt:  cnt,
 		mCnt: mCnt,
@@ -42,7 +46,6 @@ func InitRoutes(cnt *controller.ActorController, mCnt *controller.MovieControlle
 	return r
 }
 
-func (s Server) Run() error {
+func (s *Server) Run() error {
 	return s.httpServer.ListenAndServe()
-
 }

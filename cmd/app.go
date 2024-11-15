@@ -1,10 +1,11 @@
-package main
+package cmd
 
 import (
 	"Filmoteka/internal/controller"
 	"Filmoteka/internal/postgres"
 	"Filmoteka/internal/repository"
 	service2 "Filmoteka/internal/service"
+	store2 "Filmoteka/internal/store"
 	"database/sql"
 )
 
@@ -24,8 +25,12 @@ func Run() error {
 	movieRepo := repository.NewMovie(db)
 	actorRepo := repository.NewActor(db)
 
-	movieService := service2.NewMovie(movieRepo)
-	actorService := service2.NewActor(actorRepo)
+	movieStore := store2.NewMovie(movieRepo)
+	actorStore := store2.NewActor(actorRepo)
+
+	// Инициализация сервисов
+	movieService := service2.NewMovie(movieStore)
+	actorService := service2.NewActor(actorStore)
 
 	// Инициализация контроллера
 	filmotekaController := controller.NewFilmoteka(movieService, actorService)

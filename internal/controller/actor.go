@@ -4,6 +4,7 @@ import (
 	"Filmoteka/internal/model"
 	"Filmoteka/internal/service"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -78,8 +79,12 @@ func (ac *ActorController) UpdateActor(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Actor updated successfully"})
 }
-
 func (ac *ActorController) DeleteActor(ctx *gin.Context) {
+	if ac.service == nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Service not initialized"})
+		return
+	}
+
 	idParam := ctx.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
@@ -88,7 +93,8 @@ func (ac *ActorController) DeleteActor(ctx *gin.Context) {
 	}
 	if err := ac.service.DeleteActor(id); err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Actor Not Found"})
+		log.Printf("Error deleting actor with ID %d: %v", id, err) // Логирование ошибки
 		return
 	}
-	ctx.JSON(http.StatusNoContent, nil)
+
 }

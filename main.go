@@ -1,23 +1,19 @@
 package main
 
 import (
-	"Filmoteka/middleware"
-	"github.com/gin-gonic/gin"
-	"net/http"
+	"Filmoteka/internal/controller"
+	"Filmoteka/internal/router"
+	"log"
 )
 
 func main() {
-	router := gin.Default()
 
-	router.GET("/public", PublicHandler)
-	router.GET("/admin", middleware.TokenAuthMiddleware(), middleware.RequireRole("admin"), AdminHandler)
-	router.Run(":8081")
-}
+	actorController := controller.ActorController{}
+	movieController := controller.MovieController{}
 
-func PublicHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "Public resource accessed!"})
-}
+	srv := router.NewServer(actorController, movieController)
 
-func AdminHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "Admin resource accessed! You have admin access."})
+	if err := srv.Run(); err != nil {
+		log.Fatalf("Failed to run server: %v", err)
+	}
 }
