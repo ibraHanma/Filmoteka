@@ -4,23 +4,22 @@ import (
 	"Filmoteka/internal/controller"
 	"Filmoteka/internal/postgres"
 	"Filmoteka/internal/repository"
+	"Filmoteka/internal/server"
 	service2 "Filmoteka/internal/service"
 	store2 "Filmoteka/internal/store"
-	"database/sql"
+	"log"
 )
 
 func Run() error {
-
 	db, err := postgres.Connect()
 	if err != nil {
 		return err
 	}
-	defer func(db *sql.DB) {
-		err := db.Close()
-		if err != nil {
-
+	defer func() {
+		if err := db.Close(); err != nil {
+			log.Printf("Ошибка при закрытии базы данных: %v", err)
 		}
-	}(db)
+	}()
 
 	movieRepo := repository.NewMovie(db)
 	actorRepo := repository.NewActor(db)
@@ -28,12 +27,20 @@ func Run() error {
 	movieStore := store2.NewMovie(movieRepo)
 	actorStore := store2.NewActor(actorRepo)
 
-	// Инициализация сервисов
 	movieService := service2.NewMovie(movieStore)
 	actorService := service2.NewActor(actorStore)
 
-	// Инициализация контроллера
-	filmotekaController := controller.NewFilmoteka(movieService, actorService)
+	movieController := controller.MovieController{
+		MovieService: movieService,
+	}
+	actorController := controller.ActorController{
+		ActorService: actorService,
+	}
+	srv := server.NewServer(actorController, movieController)
+
+	srv.InitRoutes()
+
+	controller.NewFilmoteka(&movieService, &actorService)
 
 	return nil
 }

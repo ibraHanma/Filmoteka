@@ -1,39 +1,45 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
-func TokenAuthMiddleware() gin.HandlerFunc {
+func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-
-		token := c.GetHeader("Authorization")
+		token := c.Request.Header.Get("Authorization")
 		if token == "" {
-			c.AbortWithStatus(http.StatusUnauthorized)
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is missing"})
+			c.Abort()
 			return
 		}
+		if !strings.HasPrefix(token, "Bearer ") {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token format"})
+			c.Abort()
+			return
+		}
+		token = strings.TrimPrefix(token, "Bearer ")
 
-		role := "user"
-		if strings.HasPrefix(token, "admin_") {
-			role = "admin"
+		role, err := GetRoleFromToken(token)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			c.Abort()
+			return
 		}
 
 		c.Set("role", role)
 		c.Next()
 	}
 }
+func GetRoleFromToken(token string) (string, error) {
 
-func RequireRole(requiredRole string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		role, exists := c.Get("role")
-		if !exists || role != requiredRole {
-			c.AbortWithStatus(http.StatusForbidden)
-			return
-		}
-
-		c.Next()
+	if token == "valid_admin_token" {
+		return "admin", nil
+	} else if token == "valid_user_token" {
+		return "user", nil
 	}
+	return "", fmt.Errorf("invalid token")
 }

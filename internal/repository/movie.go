@@ -15,16 +15,15 @@ type Movie struct {
 	Rating      int
 }
 
-type movie struct {
+type MovieRepo struct {
 	db *sql.DB
 }
 
-func NewMovie(db *sql.DB) *movie {
-	return &movie{db: db}
-
+func NewMovie(db *sql.DB) *MovieRepo {
+	return &MovieRepo{db: db}
 }
 
-func (m *movie) CreateMovie(movie *Movie) (int, error) {
+func (m *MovieRepo) CreateMovie(movie *Movie) (int, error) {
 	var id int
 
 	query, args, err := squirrel.Insert("movie").
@@ -43,7 +42,7 @@ func (m *movie) CreateMovie(movie *Movie) (int, error) {
 	return id, nil
 }
 
-func (m *movie) GetMovie(id int) (Movie, error) {
+func (m *MovieRepo) GetMovie(id int) (Movie, error) {
 	var movie Movie
 	query, args, err := squirrel.Select("id", "title", "description", "release_date", "rating").
 		From("movie").
@@ -60,7 +59,7 @@ func (m *movie) GetMovie(id int) (Movie, error) {
 
 }
 
-func (m *movie) UpdateMovie(movie Movie) error {
+func (m *MovieRepo) UpdateMovie(movie Movie) error {
 	query, args, err := squirrel.Update("movie").
 		Set("title", movie.Title).
 		Set("description", movie.Description).
@@ -78,7 +77,7 @@ func (m *movie) UpdateMovie(movie Movie) error {
 	return nil
 }
 
-func (m *movie) DeleteMovie(id int) error {
+func (m *MovieRepo) DeleteMovie(id int) error {
 	query, args, err := squirrel.Delete("movie").
 		Where(squirrel.Eq{"id": id}).
 		ToSql()

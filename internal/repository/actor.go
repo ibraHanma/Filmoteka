@@ -14,17 +14,15 @@ type Actor struct {
 	Birthday time.Time
 	Gender   string
 }
-
-type actor struct {
+type ActorRepo struct {
 	db *sql.DB
 }
 
-func NewActor(db *sql.DB) *actor {
-	return &actor{db: db}
-
+func NewActor(db *sql.DB) *ActorRepo {
+	return &ActorRepo{db: db}
 }
 
-func (a *actor) CreateActor(actor Actor) (int, error) {
+func (a *ActorRepo) CreateActor(actor Actor) (int, error) {
 	var id int
 
 	query, args, err := squirrel.Insert("actor").
@@ -44,7 +42,7 @@ func (a *actor) CreateActor(actor Actor) (int, error) {
 	return id, nil
 }
 
-func (a *actor) GetActor(id int) (Actor, error) {
+func (a *ActorRepo) GetActor(id int) (Actor, error) {
 	var actor Actor
 
 	query, args, err := squirrel.Select("id", "name", "birthday", "gender").
@@ -66,7 +64,7 @@ func (a *actor) GetActor(id int) (Actor, error) {
 	return actor, nil
 }
 
-func (a *actor) UpdateActor(actor Actor) error {
+func (a *ActorRepo) UpdateActor(actor Actor) error {
 	query, args, err := squirrel.Update("actor").
 		Set("name", actor.Name).
 		Set("birthday", actor.Birthday).
@@ -85,7 +83,7 @@ func (a *actor) UpdateActor(actor Actor) error {
 
 }
 
-func (a *actor) DeleteActor(id int) error {
+func (a *ActorRepo) DeleteActor(id int) error {
 	query, args, err := squirrel.Delete("actor").
 		Where(squirrel.Eq{"id": id}).
 		ToSql()
