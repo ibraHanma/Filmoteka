@@ -6,7 +6,7 @@ import (
 )
 
 type Actor struct {
-	repo *repository.ActorRepo // или как вы назвали свой репозиторий
+	repo *repository.ActorRepo
 }
 
 func (a Actor) CreateActor(actor service.Actor) (int, error) {

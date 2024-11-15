@@ -6,7 +6,7 @@ import (
 )
 
 type Movie struct {
-	repo *repository.MovieRepo // или как вы назвали свой репозиторий
+	repo *repository.MovieRepo
 }
 
 func (m Movie) CreateMovie(movie service.Movie) (int, error) {
