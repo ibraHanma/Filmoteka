@@ -1,6 +1,7 @@
 package service
 
 import (
+	"Filmoteka/internal/model"
 	"errors"
 	"time"
 )
@@ -13,15 +14,16 @@ type storeMovie interface {
 }
 
 type Movie struct {
-	ID          int
-	Title       string
-	Description string
-	ReleaseDate time.Time
-	Rating      int
+	ID          int       `json:"ID"`
+	Title       string    `json:"Title,"`
+	Description string    `json:"Description"`
+	ReleaseDate time.Time `json:"ReleaseDate"`
+	Rating      int       `json:"Rating"`
 }
 
 type MovieService struct {
 	store storeMovie
+	movie map[int]model.Movie
 }
 
 func NewMovie(store storeMovie) MovieService {
@@ -47,6 +49,7 @@ func (m *MovieService) GetMovie(id int) (Movie, error) {
 	}
 	return m.store.GetMovie(id)
 }
+
 func (m *MovieService) UpdateMovie(id int, movie Movie) error {
 	if movie.Title == "" {
 		return errors.New("movie title is required")
@@ -59,6 +62,7 @@ func (m *MovieService) UpdateMovie(id int, movie Movie) error {
 	}
 	return m.store.UpdateMovie(id, movie)
 }
+
 func (m *MovieService) DeleteMovie(id int) error {
 	if id <= 0 {
 		return errors.New("invalid movie ID")

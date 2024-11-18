@@ -1,8 +1,11 @@
 package main
 
-import "Filmoteka/cmd"
+import (
+	"Filmoteka/cmd"
+)
 
 func main() {
 
 	cmd.Run()
+
 }

@@ -2,17 +2,18 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/Masterminds/squirrel"
 	"time"
 )
 
 type Movie struct {
-	ID          int
-	Title       string
-	Description string
-	ReleaseDate time.Time
-	Rating      int
+	ID          int       `json:"ID"`
+	Title       string    `json:"Title,omitempty"`
+	Description string    `json:"Description"`
+	ReleaseDate time.Time `json:"ReleaseDate"`
+	Rating      int       `json:"Rating"`
 }
 
 type MovieRepo struct {
@@ -24,6 +25,10 @@ func NewMovie(db *sql.DB) *MovieRepo {
 }
 
 func (m *MovieRepo) CreateMovie(movie *Movie) (int, error) {
+	if movie == nil {
+		return 0, fmt.Errorf("movie cannot be nil")
+	}
+
 	var id int
 
 	query, args, err := squirrel.Insert("movie").
@@ -32,12 +37,12 @@ func (m *MovieRepo) CreateMovie(movie *Movie) (int, error) {
 		Suffix("RETURNING id").
 		ToSql()
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("не удалось создать SQL запрос: %w", err)
 	}
 
 	err = m.db.QueryRow(query, args...).Scan(&id)
 	if err != nil {
-		return 0, fmt.Errorf("не удалось выполнить запрос %w", err)
+		return 0, fmt.Errorf("не удалось выполнить запрос: %w", err)
 	}
 	return id, nil
 }
@@ -49,17 +54,25 @@ func (m *MovieRepo) GetMovie(id int) (Movie, error) {
 		Where(squirrel.Eq{"id": id}).
 		ToSql()
 	if err != nil {
-		return Movie{}, err
+		return Movie{}, fmt.Errorf("не удалось создать SQL запрос: %w", err)
 	}
 	err = m.db.QueryRow(query, args...).Scan(&movie.ID, &movie.Title, &movie.Description, &movie.ReleaseDate, &movie.Rating)
 	if err != nil {
-		return Movie{}, fmt.Errorf("не удалось отсканировать фильм с идентификатором%d,%w", id, err)
+		if errors.Is(err, sql.ErrNoRows) {
+			return Movie{}, fmt.Errorf("фильм с идентификатором %d не найден", id)
+		}
+		return Movie{}, fmt.Errorf("не удалось отсканировать фильм с идентификатором %d: %w", id, err)
 	}
 	return movie, nil
-
 }
 
-func (m *MovieRepo) UpdateMovie(movie Movie) error {
+func (m *MovieRepo) UpdateMovie(movie *Movie) error {
+	if movie == nil {
+		return fmt.Errorf("movie cannot be nil")
+	}
+	if _, err := m.GetMovie(movie.ID); err != nil {
+		return err
+	}
 	query, args, err := squirrel.Update("movie").
 		Set("title", movie.Title).
 		Set("description", movie.Description).
@@ -78,6 +91,9 @@ func (m *MovieRepo) UpdateMovie(movie Movie) error {
 }
 
 func (m *MovieRepo) DeleteMovie(id int) error {
+	if _, err := m.GetMovie(id); err != nil {
+		return err
+	}
 	query, args, err := squirrel.Delete("movie").
 		Where(squirrel.Eq{"id": id}).
 		ToSql()
@@ -89,5 +105,4 @@ func (m *MovieRepo) DeleteMovie(id int) error {
 		return fmt.Errorf("не удалось удалить фильм с идентификатором %d: %w", id, err)
 	}
 	return nil
-
 }

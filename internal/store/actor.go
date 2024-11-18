@@ -3,74 +3,49 @@ package store
 import (
 	"Filmoteka/internal/repository"
 	"Filmoteka/internal/service"
+	"log"
 )
+
+func NewActor(repo *repository.ActorRepo) *Actor {
+	return &Actor{repo: repo}
+}
 
 type Actor struct {
 	repo *repository.ActorRepo
 }
 
 func (a Actor) CreateActor(actor service.Actor) (int, error) {
-	//TODO implement me
-	panic("implement me")
+	id, err := a.repo.CreateActor(repository.Actor(actor))
+	if err != nil {
+		log.Printf("Ошибка при создании актера: %v", err)
+		return 0, err
+	}
+	return id, nil
 }
 
 func (a Actor) GetActor(id int) (service.Actor, error) {
-	//TODO implement me
-	panic("implement me")
+	actor, err := a.repo.GetActor(id)
+	if err != nil {
+		log.Printf("Ошибка при получении актера с ID %d: %v", id, err)
+		return service.Actor{}, err
+	}
+	return service.Actor(actor), nil
 }
 
 func (a Actor) UpdateActor(id int, actor service.Actor) error {
-	//TODO implement me
-	panic("implement me")
+	err := a.repo.UpdateActor(repository.Actor(actor))
+	if err != nil {
+		log.Printf("Ошибка при обновлении актера с ID %d: %v", id, err)
+		return err
+	}
+	return nil
 }
 
 func (a Actor) DeleteActor(id int) error {
-	//TODO implement me
-	panic("implement me")
+	err := a.repo.DeleteActor(id)
+	if err != nil {
+		log.Printf("Ошибка при удалении актера с ID %d: %v", id, err)
+		return err
+	}
+	return nil
 }
-
-func NewActor(repo *repository.ActorRepo) *Actor {
-	return &Actor{repo: repo}
-}
-
-type ActorStore struct {
-	actor []service.Actor
-}
-
-//
-//func (r *ActorStore) CreateActor(actor service.Actor) error {
-//	r.actor = append(r.actor, actor)
-//
-//	return nil
-//}
-//
-//func (r *ActorStore) GetActor(id int) (*service.Actor, error) {
-//	for _, actor := range r.actor {
-//		if actor.ID == id {
-//			return &actor, nil
-//		}
-//	}
-//	return nil, fmt.Errorf("actor not found")
-//}
-//
-//func (r *ActorStore) UpdateActor(actor *service.Actor) error {
-//	for i, m := range r.actor {
-//		if m.ID == actor.ID {
-//			r.actor[i] = *actor
-//
-//			return nil
-//		}
-//	}
-//	return fmt.Errorf("actor not found")
-//}
-//
-//func (r *ActorStore) DeleteActor(id int) error {
-//	for i, m := range r.actor {
-//		if m.ID == id {
-//			r.actor = append(r.actor[:i], r.actor[i+1:]...)
-//
-//			return nil
-//		}
-//	}
-//	return fmt.Errorf("actor not found")
-//}

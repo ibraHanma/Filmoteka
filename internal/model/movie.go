@@ -1,11 +1,13 @@
 package model
 
-import "time"
+import (
+	"time"
+)
 
 type Movie struct {
-	ID          int       `json:"ID"`
-	Title       string    `json:"Title,omitempty"`
-	Description string    `json:"Description"`
-	ReleaseDate time.Time `json:"ReleaseDate"`
-	Rating      int       `json:"Rating"`
+	ID          int       `json:"id"`
+	Title       string    `json:"title,omitempty" binding:"required"`
+	Description string    `json:"description" binding:"required"`
+	ReleaseDate time.Time `json:"release_date" binding:"required"`
+	Rating      int       `json:"rating" binding:"required,min=1,max=10"`
 }

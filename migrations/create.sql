@@ -2,14 +2,14 @@ CREATE TABLE movie (
     id INT PRIMARY KEY,
     title VARCHAR(150) NOT NULL,
     description VARCHAR(1000),
-    release_date DATE NOT NULL,
+    release_date TIME NOT NULL,
     rating INT CHECK (rating >= 0 AND rating <= 10)
 );
 
 CREATE TABLE actor (
     id INT PRIMARY KEY,
     name VARCHAR(50),
-    birthday DATE,
+    birthday TIME,
     gender VARCHAR(10)
 );
 

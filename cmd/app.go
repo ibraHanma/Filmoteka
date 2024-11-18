@@ -37,7 +37,6 @@ func Run() error {
 		ActorService: actorService,
 	}
 	srv := server.NewServer(actorController, movieController)
-	srv.InitRoutes()
 	controller.NewFilmoteka(&movieService, &actorService)
 	srv.Run()
 

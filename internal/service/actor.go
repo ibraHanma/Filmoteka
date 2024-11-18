@@ -6,15 +6,12 @@ import (
 	"time"
 )
 
-// Определяем интерфейс для хранилища актера
 type storeActor interface {
-	CreateActor(actor Actor) (int, error)  // Позволяет создавать актеров
-	GetActor(id int) (Actor, error)        // Получает актера по ID
-	UpdateActor(id int, actor Actor) error // Обновляет данные актера
-	DeleteActor(id int) error              // Удаляет актера по ID
+	CreateActor(actor Actor) (int, error)
+	GetActor(id int) (Actor, error)
+	UpdateActor(id int, actor Actor) error
+	DeleteActor(id int) error
 }
-
-// Структура актера
 
 type Actor struct {
 	ID       int       `json:"id"`
@@ -22,35 +19,31 @@ type Actor struct {
 	Birthday time.Time `json:"birthday"`
 	Gender   string    `json:"gender"`
 }
-
-// Сервис актера
-
 type ActorService struct {
-	store  storeActor // Хранилище, которое реализует интерфейс storeActor
-	actors map[int]model.Actor
+	store storeActor
+	actor map[int]model.Actor
 }
-
-// Создание нового сервиса актера
 
 func NewActor(store storeActor) ActorService {
 	return ActorService{store: store}
 }
 
-// Создает нового актера
-
 func (as *ActorService) CreateActor(actor Actor) (int, error) {
 	if actor.Name == "" {
-		return 0, errors.New("actor name cannot be empty")
+		return 0, errors.New("имя актера не может быть пустым")
 	}
-	// Сохраняем актера в хранилище
+	if actor.Birthday.IsZero() {
+		return 0, errors.New("дата рождения не может быть пустой")
+	}
+	if actor.Gender == "" {
+		return 0, errors.New("пол актера не может быть пустым")
+	}
 	id, err := as.store.CreateActor(actor)
 	if err != nil {
 		return 0, err
 	}
 	return id, nil
 }
-
-// Получает актера по ID
 
 func (as *ActorService) GetActor(id int) (Actor, error) {
 	if id <= 0 {
@@ -59,19 +52,21 @@ func (as *ActorService) GetActor(id int) (Actor, error) {
 	return as.store.GetActor(id)
 }
 
-// Обновляет данные существующего актера
-
 func (as *ActorService) UpdateActor(id int, actor Actor) error {
 	if actor.Name == "" {
-		return errors.New("actor name cannot be empty")
+		return errors.New("the actor's name cannot be empty")
+	}
+	if actor.Birthday.IsZero() {
+		return errors.New("еhe date of birth cannot be empty")
+	}
+	if actor.Gender == "" {
+		return errors.New("the actor's gender cannot be empty")
 	}
 	if id <= 0 {
-		return errors.New("actor id should be greater than zero")
+		return errors.New("the actor's ID must be greater than zero")
 	}
 	return as.store.UpdateActor(id, actor)
 }
-
-// Удаляет актера по ID
 
 func (as *ActorService) DeleteActor(id int) error {
 	if id <= 0 {

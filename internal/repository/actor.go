@@ -9,10 +9,10 @@ import (
 )
 
 type Actor struct {
-	ID       int
-	Name     string
-	Birthday time.Time
-	Gender   string
+	ID       int       `json:"id"`
+	Name     string    `json:"name"`
+	Birthday time.Time `json:"birthday"`
+	Gender   string    `json:"gender"`
 }
 type ActorRepo struct {
 	db *sql.DB
@@ -33,11 +33,12 @@ func (a *ActorRepo) CreateActor(actor Actor) (int, error) {
 		ToSql()
 
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("не удалось создать SQL запрос: %w", err)
 	}
+
 	err = a.db.QueryRow(query, args...).Scan(&id)
 	if err != nil {
-		return 0, fmt.Errorf("не удалось выполнить запрос:%w", err)
+		return 0, fmt.Errorf("не удалось выполнить запрос: %w", err)
 	}
 	return id, nil
 }
@@ -51,20 +52,25 @@ func (a *ActorRepo) GetActor(id int) (Actor, error) {
 		ToSql()
 
 	if err != nil {
-		return Actor{}, err
+		return Actor{}, fmt.Errorf("не удалось создать SQL запрос: %w", err)
 	}
 
 	err = a.db.QueryRow(query, args...).Scan(&actor.ID, &actor.Name, &actor.Birthday, &actor.Gender)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return Actor{}, fmt.Errorf("актер с идентификатором не найден %w", id)
+			return Actor{}, fmt.Errorf("актер с идентификатором %d не найден", id)
 		}
-		return Actor{}, err
+		return Actor{}, fmt.Errorf("не удалось выполнить запрос: %w", err)
 	}
 	return actor, nil
 }
 
 func (a *ActorRepo) UpdateActor(actor Actor) error {
+	_, err := a.GetActor(actor.ID)
+	if err != nil {
+		return err
+	}
+
 	query, args, err := squirrel.Update("actor").
 		Set("name", actor.Name).
 		Set("birthday", actor.Birthday).
@@ -74,26 +80,30 @@ func (a *ActorRepo) UpdateActor(actor Actor) error {
 	if err != nil {
 		return fmt.Errorf("не удалось создать SQL запрос: %w", err)
 	}
+
 	_, err = a.db.Exec(query, args...)
 	if err != nil {
 		return fmt.Errorf("не удалось обновить актера с ID %d: %w", actor.ID, err)
-
 	}
 	return nil
-
 }
 
 func (a *ActorRepo) DeleteActor(id int) error {
+	_, err := a.GetActor(id)
+	if err != nil {
+		return err
+	}
+
 	query, args, err := squirrel.Delete("actor").
 		Where(squirrel.Eq{"id": id}).
 		ToSql()
 	if err != nil {
 		return fmt.Errorf("не удалось создать SQL запрос: %w", err)
 	}
+
 	_, err = a.db.Exec(query, args...)
 	if err != nil {
-		return fmt.Errorf("не удалось удалить участника с идентификатором %d: %w", id, err)
+		return fmt.Errorf("не удалось удалить актера с идентификатором %d: %w", id, err)
 	}
 	return nil
-
 }
